@@ -9,7 +9,7 @@ export const FIELDS = {
   gateway: 'Gateway connected', controller: 'Controller responding', efficiency: 'Heat recovery efficiency',
 };
 const DEFAULTS = {type: 'custom:smart-ventilation-card', title: 'Airflow Card', show_title: true, animation: true,
-  show_details: true, show_diagnostics: true, calculate_efficiency: true, bypass_threshold: 1, bypass_active_state: 'on',
+  show_details: true, show_diagnostics: true, background_opacity: 1, calculate_efficiency: true, bypass_threshold: 1, bypass_active_state: 'on',
   cold_temperature: 0, hot_temperature: 30, temperature_unit: 'auto', entities: {}, extra_entities: []};
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 export function numeric(value) {
@@ -26,7 +26,8 @@ export function normalizeConfig(config) {
   }
   if (!Array.isArray(c.extra_entities) || c.extra_entities.some(v => typeof v !== 'string' || !/^[a-z_]+\.[a-z0-9_]+$/.test(v))) throw new Error('extra_entities must be a list of entity IDs.');
   for (const key of ['animation', 'show_title', 'show_details', 'show_diagnostics', 'calculate_efficiency']) if (typeof c[key] !== 'boolean') throw new Error(`${key} must be true or false.`);
-  for (const key of ['bypass_threshold','cold_temperature','hot_temperature']) if (typeof c[key] !== 'number' || !Number.isFinite(c[key])) throw new Error(`${key} must be a number.`);
+  for (const key of ['bypass_threshold','cold_temperature','hot_temperature','background_opacity']) if (typeof c[key] !== 'number' || !Number.isFinite(c[key])) throw new Error(`${key} must be a number.`);
+  if (c.background_opacity < 0 || c.background_opacity > 1) throw new Error('background_opacity must be between 0 and 1.');
   if (c.bypass_threshold < 0 || c.bypass_threshold > 100) throw new Error('Bypass threshold must be between 0 and 100.');
   if (c.hot_temperature <= c.cold_temperature) throw new Error('Hot temperature must exceed cold temperature (°C).');
   if (!['auto','°C','°F'].includes(c.temperature_unit)) throw new Error('temperature_unit must be auto, °C or °F.');
@@ -68,7 +69,9 @@ export function fanSpeed(output, level, offline) {
 }
 const style = `
 :host{display:block;min-width:0;font-family:var(--ha-font-family,system-ui,sans-serif);color:#f2f5f8}
-ha-card{display:block;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#242c32 0%,#1b2025 75%);border:1px solid #35414b;border-radius:16px;color:#f2f5f8;container-type:inline-size}
+ha-card{display:block;overflow:hidden;position:relative;isolation:isolate;background:transparent;border:0;box-shadow:none;--ha-card-border-width:0;--ha-card-box-shadow:none;border-radius:16px;color:#f2f5f8;container-type:inline-size}
+ha-card::before{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(ellipse at 50% 40%,#242c32 0%,#1b2025 75%);opacity:var(--airflow-background-opacity,1);pointer-events:none;z-index:0}
+ha-card>*{position:relative;z-index:1}
 header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 16px 5px;flex-wrap:wrap}h2{font-size:17px;font-weight:650;margin:0;line-height:1.25;overflow-wrap:anywhere}
 .diagram{padding:0 12px}svg{display:block;width:100%;height:auto;overflow:visible}svg text{fill:#f2f5f8;font-family:inherit}.label{font-size:10px;fill:#d7e0e9}.temp{font-size:14px;font-weight:600}.heat-core{fill:#9abacb;fill-opacity:.13;stroke:#9abacb;stroke-opacity:.2;stroke-width:.8}.heat-core.bypassed{fill-opacity:.13}.core-label{font-size:9px;fill:#eef4f8}.core-value{font-size:15px;font-weight:650}.mode-text{font-size:10px;fill:#e4eaf0}.subtle{font-size:8px;fill:#a6b3bf}.heat-arrow{fill:url(#heat-gradient);animation:heat-pulse 2s ease-in-out infinite}.heat-waves{fill:none;stroke:#ffb452;stroke-width:2;stroke-linecap:round}.damper{stroke:#f0f5f8;stroke-width:3;stroke-linecap:round;fill:none}.track{fill:none;stroke-width:16;stroke-linecap:butt;opacity:.25}.flow{fill:none;stroke-width:3;stroke-linecap:round;stroke-dasharray:.1 9;animation:flow 1s linear infinite;filter:drop-shadow(0 0 3px currentColor)}.stopped{animation:none!important;opacity:.25}.rotor{transform-box:view-box;transform-origin:18px 18px;animation:spin 2s linear infinite}.fan{display:flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;background:transparent;color:#b4bfcb}.fan>svg{width:36px;height:36px}.fan .housing{fill:#20272e;stroke:#aebac7;stroke-width:1.6}.fan-label{font-size:9px;fill:#cbd6e1}.fan-output{font-size:12px;font-weight:600}button{font:inherit;color:inherit;cursor:pointer;text-align:left;border:0}button:focus-visible,summary:focus-visible{outline:2px solid #67def0;outline-offset:-2px}button:disabled{cursor:default}
 .metrics{border-top:1px solid #39434c;display:flex;margin:0 14px;padding:16px 0;gap:0}.metric{background:none;padding:8px;min-width:0}.metrics .metric{flex:1;display:flex;align-items:center;gap:10px;padding:0 10px}.metrics .metric:first-child{padding-left:0}.metrics .metric+.metric{border-left:1px solid #63707c}.metric span{display:block;font-size:10px;color:#b6c3d0;overflow-wrap:anywhere}.metric strong{display:block;font-size:14px;font-weight:600;margin-top:3px;overflow-wrap:anywhere}.metric ha-icon{--mdc-icon-size:25px;color:#bdc9d5;flex-shrink:0}.metrics .metric:last-child{padding-right:0}details{border-top:1px solid #39434c;padding:10px 16px;font-size:11px}summary{cursor:pointer;color:#aab8c5}.extras{display:grid;grid-template-columns:1fr 1fr;margin-top:8px}.notice{margin:0;padding:8px 16px;color:#f2f5f8;border-left:3px solid #ffb452;font-size:11px}.empty{padding:28px 18px;color:#b6c3d0;font-size:14px}.disabled .flow,.disabled .rotor,.disabled .heat-arrow{animation:none!important}@keyframes flow{to{stroke-dashoffset:-36.4}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes heat-pulse{50%{opacity:.65}}@media(prefers-reduced-motion:reduce){.flow,.rotor,.heat-arrow{animation:none!important}}@container(max-width:350px){header{padding:14px 14px 2px}h2{font-size:16px}.metrics .metric{gap:5px;padding:0 7px}.metric ha-icon{--mdc-icon-size:22px}.metric strong{font-size:13px}}
@@ -128,7 +131,7 @@ export class SmartVentilationCard extends HTMLElement {
     const missing = Object.entries(c.entities).filter(([,id])=>id && (!this._hass.states[id] || ['unknown','unavailable'].includes(this._hass.states[id].state))).length;
     const footer = (key,label,icon) => `<button class="metric" data-entity="${escape(c.entities[key])}"><ha-icon icon="mdi:${icon}"></ha-icon><div><span>${label}</span><strong>${escape(this.value(e(key),key==='room_temperature'))}</strong></div></button>`;
     const diagnostics = ['setpoint','hygrostat','supply_rpm','extract_rpm','gateway','controller'].filter(k=>c.entities[k]);
-    this.shadowRoot.innerHTML = `<style>${style}</style><ha-card class="${c.animation ? '' : 'disabled'} ${c.show_title ? '' : 'headerless'}">
+    this.shadowRoot.innerHTML = `<style>${style}</style><ha-card style="--airflow-background-opacity:${c.background_opacity}" class="${c.animation ? '' : 'disabled'} ${c.show_title ? '' : 'headerless'}">
       ${c.show_title ? `<header><h2>${escape(c.title)}</h2></header>` : ''}
       ${Object.values(c.entities).some(Boolean) ? `<div class="diagram"><svg viewBox="0 0 360 238" role="group" aria-label="${status}. ${escape(['outdoor','supply','extract','exhaust'].map(key=>`${key}: ${this.value(e(`${key}_temperature`),true)}`).join('; '))}. Outdoor air flows to supply; extract air flows to exhaust. ${bypass==='active'?'Heat recovery is bypassed. The lines show airflow direction, not the physical bypass duct.':''}">
 
@@ -189,6 +192,7 @@ export class SmartVentilationCardEditor extends HTMLElement {
     this._form.hass = this._hass;
     this._form.data = {...this._config,...this._config.entities};
     this._form.schema = [
+      {name:'background_opacity',label:'Background opacity (0 = transparent, 1 = opaque)',selector:{number:{min:0,max:1,step:0.05,mode:'slider'}}},
       {name:'show_title',label:'Show title',selector:{boolean:{}}},
       {name:'title',label:'Title',selector:{text:{}}},
       {type:'expandable',flatten:true,name:'air',title:'Air temperatures',schema:Object.entries(FIELDS).slice(0,4).map(([name,label])=>({name,label,selector:{entity:{domain:['sensor','input_number']}}}))},

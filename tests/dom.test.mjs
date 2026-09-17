@@ -36,8 +36,8 @@ test('editor round-trip preserves HA layout options and removes cleared entities
  const form=editor.shadowRoot.querySelector('ha-form');
  assert.ok(form.schema.filter(s=>s.type==='expandable').every(s=>s.flatten));
  let result;editor.addEventListener('config-changed',event=>result=event.detail.config);
- form.dispatchEvent(new CustomEvent('value-changed',{detail:{value:{...form.data,title:'Changed',outdoor_temperature:undefined,bypass:'sensor.other',show_title:false,show_diagnostics:false,animation:false}}}));
- assert.equal(result.title,'Changed');assert.equal(result.entities.outdoor_temperature,undefined);assert.equal(result.entities.bypass,'sensor.other');assert.equal(result.animation,false);assert.equal(result.show_title,false);assert.equal(result.show_diagnostics,false);assert.equal(result.grid_options.columns,6);assert.equal(result.visibility.length,1);
+ form.dispatchEvent(new CustomEvent('value-changed',{detail:{value:{...form.data,title:'Changed',outdoor_temperature:undefined,bypass:'sensor.other',show_title:false,show_diagnostics:false,background_opacity:0.4,animation:false}}}));
+ assert.equal(result.title,'Changed');assert.equal(result.entities.outdoor_temperature,undefined);assert.equal(result.entities.bypass,'sensor.other');assert.equal(result.animation,false);assert.equal(result.show_title,false);assert.equal(result.show_diagnostics,false);assert.equal(result.background_opacity,0.4);assert.equal(result.grid_options.columns,6);assert.equal(result.visibility.length,1);
  editor.setConfig(result);assert.equal(editor.shadowRoot.querySelector('ha-form').data.bypass,'sensor.other');
 });
 

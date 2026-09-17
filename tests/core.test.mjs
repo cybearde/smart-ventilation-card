@@ -6,8 +6,8 @@ globalThis.window = {};
 const {normalizeConfig, numeric, temperatureC, temperatureColor, bypassState, recovery, fanSpeed} = await import('../smart-ventilation-card.js');
 const e = (state,unit) => ({state:String(state),attributes:{unit_of_measurement:unit}});
 test('configuration validation and defaults',()=>{
- const c=normalizeConfig({entities:{supply_temperature:'sensor.supply'}});assert.equal(c.animation,true);
- for(const c of [{entities:[]},{entities:{bad:'sensor.a'}},{entities:{bypass:'<script>'}},{hot_temperature:0},{animation:'false'},{extra_entities:'sensor.a'},{bypass_threshold:101}])assert.throws(()=>normalizeConfig(c));
+ const c=normalizeConfig({entities:{supply_temperature:'sensor.supply'}});assert.equal(c.animation,true);assert.equal(c.background_opacity,1);assert.equal(normalizeConfig({background_opacity:0}).background_opacity,0);
+ for(const c of [{background_opacity:-0.1},{background_opacity:1.1},{background_opacity:'0.5'},{background_opacity:NaN},{entities:[]},{entities:{bad:'sensor.a'}},{entities:{bypass:'<script>'}},{hot_temperature:0},{animation:'false'},{extra_entities:'sensor.a'},{bypass_threshold:101}])assert.throws(()=>normalizeConfig(c));
 });
 test('unknown values never become zero',()=>{for(const v of [null,undefined,'',' ','unknown','unavailable','NaN','Infinity'])assert.equal(numeric(v),null);assert.equal(numeric('0'),0);});
 test('temperature conversions and bounded colors',()=>{assert.equal(temperatureC(e(32,'°F')),0);assert.equal(temperatureC(e(273.15,'K')),0);assert.equal(temperatureC(e(20,'rpm')),null);assert.equal(temperatureColor(-30),temperatureColor(0));assert.equal(temperatureColor(90),temperatureColor(30));assert.notEqual(temperatureColor(0),temperatureColor(30));});

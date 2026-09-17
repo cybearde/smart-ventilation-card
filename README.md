@@ -79,6 +79,7 @@ show_title: true
 animation: true
 show_details: true
 show_diagnostics: true
+background_opacity: 1
 calculate_efficiency: true
 temperature_unit: auto
 cold_temperature: 0
@@ -116,6 +117,7 @@ No filter alarm is inferred from the filter-reset register.
 | `title` | `Airflow Card` | Card heading |
 | `show_title` | `true` | Show heading; `false` removes the header and keeps a small diagram status |
 | `animation` | `true` | Animate airflow/fans when operation is known |
+| `background_opacity` | `1` | Background only: `0` transparent, `1` opaque; for example `0.4` for a translucent charcoal surface. Text, fans and values remain fully visible. |
 | `show_diagnostics` | `true` | Show diagnostics and additional values; set `false` to hide the entire section |
 | `show_details` | `true` | Three-part Room/Humidity/Level footer; `false` gives a shorter card |
 | `calculate_efficiency` | `true` | Estimate recovery if no efficiency entity is assigned |
