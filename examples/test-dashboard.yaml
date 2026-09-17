@@ -75,8 +75,10 @@
             "setpoint": "input_number.sv_test_setpoint"
           },
           "show_title": false,
-          "show_details": false,
-          "temperature_unit": "\u00b0F"
+          "show_details": true,
+          "temperature_unit": "\u00b0F",
+          "compact": true,
+          "show_diagnostics": false
         },
         {
           "type": "custom:smart-ventilation-card",

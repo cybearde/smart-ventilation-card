@@ -92,3 +92,15 @@ test('editor preserves and clears custom names without changing entity mappings'
  assert.equal(result.entities.supply_fan,config.entities.supply_fan);
  assert.equal(result.exchanger_label,'');assert.equal(result.show_status_text,false);
 });
+
+test('compact layout preserves readings and controls through bypass changes',()=>{
+ const settings={...config,entities:{...config.entities,room_temperature:'sensor.supply',humidity:'sensor.fan',level:'sensor.fan'}};
+ const regular=card(settings), small=card({...settings,compact:true});
+ const readings=el=>[...el.shadowRoot.querySelectorAll('.temp,.fan-output,.metrics strong,.mode-description')].map(e=>e.textContent);
+ assert.deepEqual(readings(small),readings(regular));
+ assert.ok(small.getCardSize()<regular.getCardSize());
+ assert.equal(small.shadowRoot.querySelectorAll('[data-entity]').length,regular.shadowRoot.querySelectorAll('[data-entity]').length);
+ small.hass={...hass,states:{...hass.states,'sensor.bypass':e(100,'%')}};
+ assert.equal(small.shadowRoot.querySelector('.mode-description').textContent,'Bypass 100 %');
+ assert.ok(small.shadowRoot.querySelector('.damper'));
+});

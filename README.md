@@ -119,6 +119,7 @@ No filter alarm is inferred from the filter-reset register.
 | `animation` | `true` | Animate airflow/fans when operation is known |
 | `background_opacity` | `1` | Background only: `0` transparent, `1` opaque; for example `0.4` for a translucent charcoal surface. Text, fans and values remain fully visible. |
 | `show_diagnostics` | `true` | Show diagnostics and additional values; set `false` to hide the entire section |
+| `compact` | `false` | Shorter diagram and footer; keeps all readings, moves extract fan labels above the fan |
 | `show_details` | `true` | Three-part Room/Humidity/Level footer; `false` gives a shorter card |
 | `calculate_efficiency` | `true` | Estimate recovery if no efficiency entity is assigned |
 | `temperature_unit` | `auto` | HA temperature preference; explicit `°C` or `°F` also supported |
@@ -233,3 +234,6 @@ one description, e.g. “Recovery 84%” or “Bypass 100%”; binary bypass sta
 “Bypass active”. Set `show_status_text: false` to hide this description while
 keeping the arrow/damper graphic. Offline and unknown states retain the card's
 connection/unavailable notices.
+
+Enable **Compact layout** in the visual editor or set `compact: true` in YAML.
+Title, diagnostics, custom names and transparency continue to work independently.

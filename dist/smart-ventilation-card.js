@@ -10,7 +10,7 @@ export const FIELDS = {
 };
 const LABELS = {...FIELDS, recovery:'Recovery'};
 const DEFAULTS = {type: 'custom:smart-ventilation-card', title: 'Airflow Card', show_title: true, animation: true,
-  exchanger_label: 'HEAT EXCHANGER', show_status_text: true, labels: {},
+  exchanger_label: 'HEAT EXCHANGER', show_status_text: true, compact: false, labels: {},
   show_details: true, show_diagnostics: true, background_opacity: 1, calculate_efficiency: true, bypass_threshold: 1, bypass_active_state: 'on',
   cold_temperature: 0, hot_temperature: 30, temperature_unit: 'auto', entities: {}, extra_entities: []};
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
@@ -30,7 +30,7 @@ export function normalizeConfig(config) {
   if (typeof c.exchanger_label !== 'string') throw new Error('exchanger_label must be text.');
   if (!c.labels || typeof c.labels !== 'object' || Array.isArray(c.labels)) throw new Error('labels must map reading roles to names.');
   for (const [key,value] of Object.entries(c.labels)) if (!(key in LABELS) || typeof value !== 'string') throw new Error(`Invalid custom label: ${key}`);
-  for (const key of ['show_status_text', 'animation', 'show_title', 'show_details', 'show_diagnostics', 'calculate_efficiency']) if (typeof c[key] !== 'boolean') throw new Error(`${key} must be true or false.`);
+  for (const key of ['compact', 'show_status_text', 'animation', 'show_title', 'show_details', 'show_diagnostics', 'calculate_efficiency']) if (typeof c[key] !== 'boolean') throw new Error(`${key} must be true or false.`);
   for (const key of ['bypass_threshold','cold_temperature','hot_temperature','background_opacity']) if (typeof c[key] !== 'number' || !Number.isFinite(c[key])) throw new Error(`${key} must be a number.`);
   if (c.background_opacity < 0 || c.background_opacity > 1) throw new Error('background_opacity must be between 0 and 1.');
   if (c.bypass_threshold < 0 || c.bypass_threshold > 100) throw new Error('Bypass threshold must be between 0 and 100.');
@@ -80,7 +80,7 @@ ha-card>*{position:relative;z-index:1}
 header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 16px 5px;flex-wrap:wrap}h2{font-size:17px;font-weight:650;margin:0;line-height:1.25;overflow-wrap:anywhere}
 .center-text{display:flex;align-items:center;justify-content:center;text-align:center;overflow-wrap:anywhere;line-height:1.15;height:100%;font-size:10px;color:#e4eaf0}.exchanger-name{font-size:9px}.mode-description{font-size:10px}
 .diagram{padding:0 12px}svg{display:block;width:100%;height:auto;overflow:visible}svg text{fill:#f2f5f8;font-family:inherit}.label{font-size:10px;fill:#d7e0e9}.temp{font-size:14px;font-weight:600}.heat-core{fill:#9abacb;fill-opacity:.13;stroke:#9abacb;stroke-opacity:.2;stroke-width:.8}.heat-core.bypassed{fill-opacity:.13}.core-label{font-size:9px;fill:#eef4f8}.core-value{font-size:15px;font-weight:650}.mode-text{font-size:10px;fill:#e4eaf0}.subtle{font-size:8px;fill:#a6b3bf}.heat-arrow{fill:url(#heat-gradient);animation:heat-pulse 2s ease-in-out infinite}.heat-waves{fill:none;stroke:#ffb452;stroke-width:2;stroke-linecap:round}.damper{stroke:#f0f5f8;stroke-width:3;stroke-linecap:round;fill:none}.track{fill:none;stroke-width:16;stroke-linecap:butt;opacity:.25}.flow{fill:none;stroke-width:3;stroke-linecap:round;stroke-dasharray:.1 9;animation:flow 1s linear infinite;filter:drop-shadow(0 0 3px currentColor)}.stopped{animation:none!important;opacity:.25}.rotor{transform-box:view-box;transform-origin:18px 18px;animation:spin 2s linear infinite}.fan{display:flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;background:transparent;color:#b4bfcb}.fan>svg{width:36px;height:36px}.fan .housing{fill:#20272e;stroke:#aebac7;stroke-width:1.6}.fan-label{font-size:9px;fill:#cbd6e1}.fan-output{font-size:12px;font-weight:600}button{font:inherit;color:inherit;cursor:pointer;text-align:left;border:0}button:focus-visible,summary:focus-visible{outline:2px solid #67def0;outline-offset:-2px}button:disabled{cursor:default}
-.metrics{border-top:1px solid #39434c;display:flex;margin:0 14px;padding:16px 0;gap:0}.metric{background:none;padding:8px;min-width:0}.metrics .metric{flex:1;display:flex;align-items:center;gap:10px;padding:0 10px}.metrics .metric:first-child{padding-left:0}.metrics .metric+.metric{border-left:1px solid #63707c}.metric span{display:block;font-size:10px;color:#b6c3d0;overflow-wrap:anywhere}.metric strong{display:block;font-size:14px;font-weight:600;margin-top:3px;overflow-wrap:anywhere}.metric ha-icon{--mdc-icon-size:25px;color:#bdc9d5;flex-shrink:0}.metrics .metric:last-child{padding-right:0}details{border-top:1px solid #39434c;padding:10px 16px;font-size:11px}summary{cursor:pointer;color:#aab8c5}.extras{display:grid;grid-template-columns:1fr 1fr;margin-top:8px}.notice{margin:0;padding:8px 16px;color:#f2f5f8;border-left:3px solid #ffb452;font-size:11px}.empty{padding:28px 18px;color:#b6c3d0;font-size:14px}.disabled .flow,.disabled .rotor,.disabled .heat-arrow{animation:none!important}@keyframes flow{to{stroke-dashoffset:-36.4}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes heat-pulse{50%{opacity:.65}}@media(prefers-reduced-motion:reduce){.flow,.rotor,.heat-arrow{animation:none!important}}@container(max-width:350px){header{padding:14px 14px 2px}h2{font-size:16px}.metrics .metric{gap:5px;padding:0 7px}.metric ha-icon{--mdc-icon-size:22px}.metric strong{font-size:13px}}
+.compact .metrics{padding:10px 0}.compact header{padding-top:12px}.metrics{border-top:1px solid #39434c;display:flex;margin:0 14px;padding:16px 0;gap:0}.metric{background:none;padding:8px;min-width:0}.metrics .metric{flex:1;display:flex;align-items:center;gap:10px;padding:0 10px}.metrics .metric:first-child{padding-left:0}.metrics .metric+.metric{border-left:1px solid #63707c}.metric span{display:block;font-size:10px;color:#b6c3d0;overflow-wrap:anywhere}.metric strong{display:block;font-size:14px;font-weight:600;margin-top:3px;overflow-wrap:anywhere}.metric ha-icon{--mdc-icon-size:25px;color:#bdc9d5;flex-shrink:0}.metrics .metric:last-child{padding-right:0}details{border-top:1px solid #39434c;padding:10px 16px;font-size:11px}summary{cursor:pointer;color:#aab8c5}.extras{display:grid;grid-template-columns:1fr 1fr;margin-top:8px}.notice{margin:0;padding:8px 16px;color:#f2f5f8;border-left:3px solid #ffb452;font-size:11px}.empty{padding:28px 18px;color:#b6c3d0;font-size:14px}.disabled .flow,.disabled .rotor,.disabled .heat-arrow{animation:none!important}@keyframes flow{to{stroke-dashoffset:-36.4}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes heat-pulse{50%{opacity:.65}}@media(prefers-reduced-motion:reduce){.flow,.rotor,.heat-arrow{animation:none!important}}@container(max-width:350px){header{padding:14px 14px 2px}h2{font-size:16px}.metrics .metric{gap:5px;padding:0 7px}.metric ha-icon{--mdc-icon-size:22px}.metric strong{font-size:13px}}
 `;
 const fanIcon = speed => `<svg viewBox="0 0 36 36" aria-hidden="true"><circle class="housing" cx="18" cy="18" r="16"/><g class="rotor ${speed ? '' : 'stopped'}" style="animation-duration:${speed ? 6-5*speed/100 : 6}s" fill="currentColor">${[0,120,240].map(angle=>`<path transform="rotate(${angle} 18 18)" d="M17 16C12 10 13 6 17 6C24 5 24 11 19 16Z"/>`).join('')}<circle cx="18" cy="18" r="2"/></g></svg>`;
 export class SmartVentilationCard extends HTMLElement {
@@ -90,7 +90,7 @@ export class SmartVentilationCard extends HTMLElement {
   setConfig(config) { this._config = normalizeConfig(config); this._signature = ''; this.render(); }
   set hass(hass) { this._hass = hass; this.render(); }
   get hass() { return this._hass; }
-  getCardSize() { return (this._config?.show_details === false ? 5 : 7) - (this._config?.show_title === false ? 1 : 0); }
+  getCardSize() { return (this._config?.show_details === false ? 5 : 7) - (this._config?.show_title === false ? 1 : 0) - (this._config?.compact ? 1 : 0); }
   getGridOptions() { return {columns:12,min_columns:6}; }
   entity(key) { const id = this._config.entities[key]; return id ? this._hass?.states[id] ?? {state:'unavailable',attributes:{}} : undefined; }
   value(entity, temperature = false) {
@@ -112,6 +112,7 @@ export class SmartVentilationCard extends HTMLElement {
     this._signature = signature;
     const detailsOpen = this.shadowRoot.querySelector('details')?.open;
     const focusedEntity = this.shadowRoot.activeElement?.dataset?.entity;
+    const layout = c.compact ? {height:174,top:48,bottom:148,coreY:4,coreHeight:163,headingY:8,statusY:110} : {height:238,top:76,bottom:184,coreY:28,coreHeight:198,headingY:34,statusY:153};
     const e = key => this.entity(key);
     const name = (key,fallback=LABELS[key]) => c.labels[key]?.trim() || fallback;
     const fit = (value,limit=12,width=68) => value.length > limit ? ` textLength="${width}" lengthAdjust="spacingAndGlyphs"` : '';
@@ -134,32 +135,32 @@ export class SmartVentilationCard extends HTMLElement {
     const metric = (key,label=FIELDS[key],entity=e(key),id=c.entities[key]) => `<button class="metric" ${id ? `data-entity="${escape(id)}"` : 'disabled'}><span>${escape(name(key,label))}</span><strong>${escape(this.value(entity,key.includes('temperature') || key==='setpoint'))}</strong></button>`;
     const corner = (key,x,y,label,anchor='start') => `<g transform="translate(${x} ${y})" text-anchor="${anchor}"><text class="label"${fit(name(`${key}_temperature`,label),15,104)}>${escape(name(`${key}_temperature`,label))}</text><text class="temp" y="15" style="fill:${textColor(key)}">${escape(this.value(e(`${key}_temperature`),true))}</text></g>`;
     const inlineFan = (side, x, y) => {
-      const labelY = side === 'extract' ? 211 : 40;
+      const labelY = side === 'extract' && !c.compact ? 211 : y-36;
       return `<g class="inline-fan" data-fan="${side}"><text x="${x}" y="${labelY}" text-anchor="middle" class="fan-label"${fit(name(`${side}_fan`,`${side==='supply'?'Supply':'Extract'} fan`))}>${escape(name(`${side}_fan`,`${side==='supply'?'Supply':'Extract'} fan`))}</text><text x="${x}" y="${labelY+13}" text-anchor="middle" class="fan-output">${escape(this.value(e(`${side}_fan`)))}</text><foreignObject x="${x-18}" y="${y-18}" width="36" height="36"><button xmlns="http://www.w3.org/1999/xhtml" class="fan" aria-label="${escape(name(`${side}_fan`,`${side==='supply'?'Supply':'Extract'} fan`))} ${escape(this.value(e(`${side}_fan`)))}" ${c.entities[`${side}_fan`] ? `data-entity="${escape(c.entities[`${side}_fan`])}"` : 'disabled'}>${fanIcon(speed(side))}</button></foreignObject></g>`;
     };
     const status = offline ? 'Offline' : bypass==='active' ? 'Bypass active' : bypass==='closed' ? 'Heat recovery' : 'Bypass unknown';
     const missing = Object.entries(c.entities).filter(([,id])=>id && (!this._hass.states[id] || ['unknown','unavailable'].includes(this._hass.states[id].state))).length;
     const footer = (key,label,icon) => `<button class="metric" data-entity="${escape(c.entities[key])}"><ha-icon icon="mdi:${icon}"></ha-icon><div><span>${escape(name(key,label))}</span><strong>${escape(this.value(e(key),key==='room_temperature'))}</strong></div></button>`;
     const diagnostics = ['setpoint','hygrostat','supply_rpm','extract_rpm','gateway','controller'].filter(k=>c.entities[k]);
-    this.shadowRoot.innerHTML = `<style>${style}</style><ha-card style="--airflow-background-opacity:${c.background_opacity}" class="${c.animation ? '' : 'disabled'} ${c.show_title ? '' : 'headerless'}">
+    this.shadowRoot.innerHTML = `<style>${style}</style><ha-card style="--airflow-background-opacity:${c.background_opacity}" class="${c.animation ? '' : 'disabled'} ${c.show_title ? '' : 'headerless'} ${c.compact ? 'compact' : ''}">
       ${c.show_title ? `<header><h2>${escape(c.title)}</h2></header>` : ''}
-      ${Object.values(c.entities).some(Boolean) ? `<div class="diagram"><svg viewBox="0 0 360 238" role="group" aria-label="${status}. ${escape(['outdoor','supply','extract','exhaust'].map(key=>`${key}: ${this.value(e(`${key}_temperature`),true)}`).join('; '))}. Outdoor air flows to supply; extract air flows to exhaust. ${bypass==='active'?'Heat recovery is bypassed. The lines show airflow direction, not the physical bypass duct.':''}">
+      ${Object.values(c.entities).some(Boolean) ? `<div class="diagram"><svg viewBox="0 0 360 ${layout.height}" role="group" aria-label="${status}. ${escape(['outdoor','supply','extract','exhaust'].map(key=>`${key}: ${this.value(e(`${key}_temperature`),true)}`).join('; '))}. Outdoor air flows to supply; extract air flows to exhaust. ${bypass==='active'?'Heat recovery is bypassed. The lines show airflow direction, not the physical bypass duct.':''}">
 
       <defs>
-        <linearGradient id="supply-gradient" gradientUnits="userSpaceOnUse" x1="32" y1="76" x2="328" y2="76"><stop stop-color="${colors.outdoor}"/><stop offset="1" stop-color="${colors.supply}"/></linearGradient>
-        <linearGradient id="extract-gradient" gradientUnits="userSpaceOnUse" x1="32" y1="184" x2="328" y2="184"><stop stop-color="${colors.exhaust}"/><stop offset="1" stop-color="${colors.extract}"/></linearGradient>
+        <linearGradient id="supply-gradient" gradientUnits="userSpaceOnUse" x1="32" y1="${layout.top}" x2="328" y2="${layout.top}"><stop stop-color="${colors.outdoor}"/><stop offset="1" stop-color="${colors.supply}"/></linearGradient>
+        <linearGradient id="extract-gradient" gradientUnits="userSpaceOnUse" x1="32" y1="${layout.bottom}" x2="328" y2="${layout.bottom}"><stop stop-color="${colors.exhaust}"/><stop offset="1" stop-color="${colors.extract}"/></linearGradient>
         <linearGradient id="heat-gradient" x1="0" y1="1" x2="0" y2="0"><stop stop-color="#eaa64b"/><stop offset="1" stop-color="#50bed2"/></linearGradient>
       </defs>
-      <rect class="heat-core ${bypass==='active'?'bypassed':''}" x="140" y="28" width="80" height="198" rx="8"/>
-      ${c.exchanger_label ? centerText(c.exchanger_label,34,'exchanger-name') : ''}
-      ${path('supply','M54 76H306','url(#supply-gradient)','supply')}
-      ${path('extract','M306 184H54','url(#extract-gradient)','extract')}
-      <path d="M300 72L304 76L300 80" fill="none" stroke="${colors.supply}" stroke-width="2"/>
-      <path d="M60 180L56 184L60 188" fill="none" stroke="${colors.exhaust}" stroke-width="2"/>
-      ${heatIndicator}
-      ${c.show_status_text ? centerText(description,153,'mode-description') : ''}
-      ${inlineFan('supply',248,76)}${inlineFan('extract',112,184)}
-      ${corner('outdoor',2,56,'Outdoor')}${corner('supply',358,56,'Supply','end')}${corner('exhaust',2,177,'Exhaust')}${corner('extract',358,177,'Extract','end')}
+      <rect class="heat-core ${bypass==='active'?'bypassed':''}" x="140" y="${layout.coreY}" width="80" height="${layout.coreHeight}" rx="8"/>
+      ${c.exchanger_label ? centerText(c.exchanger_label,layout.headingY,'exchanger-name') : ''}
+      ${path('supply',`M54 ${layout.top}H306`,'url(#supply-gradient)','supply')}
+      ${path('extract',`M306 ${layout.bottom}H54`,'url(#extract-gradient)','extract')}
+      <path d="M300 ${layout.top-4}L304 ${layout.top}L300 ${layout.top+4}" fill="none" stroke="${colors.supply}" stroke-width="2"/>
+      <path d="M60 ${layout.bottom-4}L56 ${layout.bottom}L60 ${layout.bottom+4}" fill="none" stroke="${colors.exhaust}" stroke-width="2"/>
+      ${c.compact ? `<g transform="translate(0 12) scale(1 .62)">${heatIndicator}</g>` : heatIndicator}
+      ${c.show_status_text ? centerText(description,layout.statusY,'mode-description') : ''}
+      ${inlineFan('supply',248,layout.top)}${inlineFan('extract',112,layout.bottom)}
+      ${corner('outdoor',2,layout.top-20,'Outdoor')}${corner('supply',358,layout.top-20,'Supply','end')}${corner('exhaust',2,layout.bottom-7,'Exhaust')}${corner('extract',358,layout.bottom-7,'Extract','end')}
       </svg></div>
 
       ${c.show_details ? `<div class="metrics">${[['room_temperature','Room','home-outline'],['humidity','Humidity','water-outline'],['level','Level','signal']].filter(([k])=>c.entities[k]).map(([k,label,icon])=>footer(k,label,icon)).join('')}</div>` : ''}
@@ -205,6 +206,7 @@ export class SmartVentilationCardEditor extends HTMLElement {
     this._form.data = {...this._config,...this._config.entities,...Object.fromEntries(Object.keys(LABELS).map(key=>[`label_${key}`,this._config.labels[key] ?? '']))};
     this._form.schema = [
       {name:'background_opacity',label:'Background opacity (0 = transparent, 1 = opaque)',selector:{number:{min:0,max:1,step:0.05,mode:'slider'}}},
+      {name:'compact',label:'Compact layout',selector:{boolean:{}}},
       {name:'show_title',label:'Show title',selector:{boolean:{}}},
       {name:'exchanger_label',label:'Heat exchanger label (empty hides it)',selector:{text:{}}},
       {name:'show_status_text',label:'Show center recovery/bypass description',selector:{boolean:{}}},
