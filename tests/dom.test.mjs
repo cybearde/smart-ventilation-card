@@ -67,3 +67,28 @@ test('three-part footer keeps secondary readings accessible in diagnostics',()=>
  assert.ok(el.shadowRoot.querySelector('details [data-entity="sensor.outdoor"]'));
  assert.ok(el.shadowRoot.querySelector('details [data-entity="sensor.extract"]'));
 });
+
+test('custom names are escaped, center mode is consolidated and both center texts can hide',()=>{
+ const el=card({...config,exchanger_label:'My unit',labels:{outdoor_temperature:'Fresh air',supply_fan:'Intake',recovery:'Efficiency'}});
+ assert.equal(el.shadowRoot.querySelector('.exchanger-name').textContent,'My unit');
+ assert.equal(el.shadowRoot.querySelector('.mode-description').textContent,'Efficiency 90%');
+ assert.match(el.shadowRoot.querySelector('.diagram').textContent,/Fresh air/);
+ assert.match(el.shadowRoot.querySelector('[data-fan="supply"]').textContent,/Intake/);
+ el.hass={...hass,states:{...hass.states,'sensor.bypass':e(100,'%')}};
+ assert.equal(el.shadowRoot.querySelector('.mode-description').textContent,'Bypass 100 %');
+ assert.doesNotMatch(el.shadowRoot.querySelector('.diagram').textContent,/Heat recoverybypassed/);
+ el.setConfig({...config,exchanger_label:'',show_status_text:false,labels:{supply_fan:'<img src=x>'}});
+ assert.equal(el.shadowRoot.querySelector('.exchanger-name'),null);
+ assert.equal(el.shadowRoot.querySelector('.mode-description'),null);
+ assert.equal(el.shadowRoot.querySelector('img'),null);
+});
+test('editor preserves and clears custom names without changing entity mappings',()=>{
+ const editor=document.createElement('smart-ventilation-card-editor');editor.setConfig({...config,labels:{supply_fan:'Intake'}});editor.hass=hass;
+ const form=editor.shadowRoot.querySelector('ha-form');let result;
+ editor.addEventListener('config-changed',event=>result=event.detail.config);
+ assert.equal(form.data.label_supply_fan,'Intake');
+ form.dispatchEvent(new CustomEvent('value-changed',{detail:{value:{...form.data,label_supply_fan:'',label_outdoor_temperature:'Outside',exchanger_label:undefined,show_status_text:false}}}));
+ assert.deepEqual(result.labels,{outdoor_temperature:'Outside'});
+ assert.equal(result.entities.supply_fan,config.entities.supply_fan);
+ assert.equal(result.exchanger_label,'');assert.equal(result.show_status_text,false);
+});

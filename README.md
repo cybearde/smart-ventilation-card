@@ -203,3 +203,33 @@ plus synthetic controls. The existing **Test matrix** also contains a saved
 separate YAML dashboard intentionally remains a reproducible test fixture.
 
 See [test record](tests/VERIFICATION.md) for the checks performed in HA.
+
+### Custom display names and center description
+
+The visual editor includes **Heat exchanger label**, **Show center recovery/bypass
+description**, and an expandable **Custom display names** section. Names affect
+only presentation; entity assignments stay unchanged. Empty custom names restore
+the defaults. An empty exchanger label hides the heading.
+
+```yaml
+exchanger_label: Ventilation unit
+show_status_text: true
+labels:
+  outdoor_temperature: Outside
+  supply_temperature: Fresh air
+  extract_temperature: Return air
+  exhaust_temperature: Exhaust
+  supply_fan: Intake fan
+  extract_fan: Extract fan
+  room_temperature: Room
+  humidity: Humidity
+  level: Speed
+  recovery: Recovery
+  bypass: Bypass
+```
+
+`labels` accepts every entity role listed above, plus `recovery`. The center has
+one description, e.g. “Recovery 84%” or “Bypass 100%”; binary bypass states show
+“Bypass active”. Set `show_status_text: false` to hide this description while
+keeping the arrow/damper graphic. Offline and unknown states retain the card's
+connection/unavailable notices.
