@@ -1,0 +1,139 @@
+{
+  "input_number": {
+    "sv_test_outdoor_temperature": {
+      "name": "SV Test outdoor temperature",
+      "min": -30,
+      "max": 100,
+      "step": 0.1,
+      "initial": 4,
+      "unit_of_measurement": "\u00b0C",
+      "mode": "box"
+    },
+    "sv_test_supply_temperature": {
+      "name": "SV Test supply temperature",
+      "min": -30,
+      "max": 100,
+      "step": 0.1,
+      "initial": 20,
+      "unit_of_measurement": "\u00b0C",
+      "mode": "box"
+    },
+    "sv_test_extract_temperature": {
+      "name": "SV Test extract temperature",
+      "min": -30,
+      "max": 100,
+      "step": 0.1,
+      "initial": 23,
+      "unit_of_measurement": "\u00b0C",
+      "mode": "box"
+    },
+    "sv_test_exhaust_temperature": {
+      "name": "SV Test exhaust temperature",
+      "min": -30,
+      "max": 100,
+      "step": 0.1,
+      "initial": 7,
+      "unit_of_measurement": "\u00b0C",
+      "mode": "box"
+    },
+    "sv_test_supply_fan": {
+      "name": "SV Test supply fan",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "initial": 49,
+      "unit_of_measurement": "%",
+      "mode": "box"
+    },
+    "sv_test_extract_fan": {
+      "name": "SV Test extract fan",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "initial": 48,
+      "unit_of_measurement": "%",
+      "mode": "box"
+    },
+    "sv_test_supply_rpm": {
+      "name": "SV Test supply rpm",
+      "min": 0,
+      "max": 3000,
+      "step": 1,
+      "initial": 0,
+      "unit_of_measurement": "rpm",
+      "mode": "box"
+    },
+    "sv_test_extract_rpm": {
+      "name": "SV Test extract rpm",
+      "min": 0,
+      "max": 3000,
+      "step": 1,
+      "initial": 0,
+      "unit_of_measurement": "rpm",
+      "mode": "box"
+    },
+    "sv_test_bypass": {
+      "name": "SV Test bypass",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "initial": 0,
+      "unit_of_measurement": "%",
+      "mode": "box"
+    },
+    "sv_test_room_temperature": {
+      "name": "SV Test room temperature",
+      "min": -30,
+      "max": 100,
+      "step": 0.1,
+      "initial": 22,
+      "unit_of_measurement": "\u00b0C",
+      "mode": "box"
+    },
+    "sv_test_humidity": {
+      "name": "SV Test humidity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "initial": 46,
+      "unit_of_measurement": "%",
+      "mode": "box"
+    },
+    "sv_test_setpoint": {
+      "name": "SV Test setpoint",
+      "min": -30,
+      "max": 100,
+      "step": 0.1,
+      "initial": 21,
+      "unit_of_measurement": "\u00b0C",
+      "mode": "box"
+    }
+  },
+  "input_boolean": {
+    "sv_test_gateway": {
+      "name": "SV Test gateway",
+      "initial": true
+    },
+    "sv_test_controller": {
+      "name": "SV Test controller",
+      "initial": true
+    },
+    "sv_test_hygrostat": {
+      "name": "SV Test hygrostat",
+      "initial": false
+    }
+  },
+  "input_select": {
+    "sv_test_level": {
+      "name": "SV Test level",
+      "options": [
+        "Off",
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4"
+      ],
+      "initial": "Level 3"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "smart-ventilation-card",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A dependency-free Home Assistant dashboard card for balanced ventilation systems.",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cybearde/smart-ventilation-card.git"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "30.0.1"
+  }
+}

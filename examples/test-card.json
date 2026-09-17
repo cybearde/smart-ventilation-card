@@ -1,0 +1,22 @@
+{
+  "type": "custom:smart-ventilation-card",
+  "title": "Airflow Card",
+  "entities": {
+    "level": "input_select.sv_test_level",
+    "gateway": "input_boolean.sv_test_gateway",
+    "controller": "input_boolean.sv_test_controller",
+    "hygrostat": "input_boolean.sv_test_hygrostat",
+    "outdoor_temperature": "input_number.sv_test_outdoor_temperature",
+    "supply_temperature": "input_number.sv_test_supply_temperature",
+    "extract_temperature": "input_number.sv_test_extract_temperature",
+    "exhaust_temperature": "input_number.sv_test_exhaust_temperature",
+    "supply_fan": "input_number.sv_test_supply_fan",
+    "extract_fan": "input_number.sv_test_extract_fan",
+    "supply_rpm": "input_number.sv_test_supply_rpm",
+    "extract_rpm": "input_number.sv_test_extract_rpm",
+    "bypass": "input_number.sv_test_bypass",
+    "room_temperature": "input_number.sv_test_room_temperature",
+    "humidity": "input_number.sv_test_humidity",
+    "setpoint": "input_number.sv_test_setpoint"
+  }
+}

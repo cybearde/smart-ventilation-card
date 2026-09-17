@@ -1,0 +1,110 @@
+{
+  "title": "Smart Ventilation Test",
+  "views": [
+    {
+      "title": "Ventilation",
+      "path": "ventilation",
+      "cards": [
+        {
+          "type": "markdown",
+          "content": "## Smart Ventilation \u00b7 test bench\nSynthetic values only. Change bypass, temperature and fan output below to exercise the card."
+        },
+        {
+          "type": "custom:smart-ventilation-card",
+          "title": "Airflow Card",
+          "entities": {
+            "level": "input_select.sv_test_level",
+            "gateway": "input_boolean.sv_test_gateway",
+            "controller": "input_boolean.sv_test_controller",
+            "hygrostat": "input_boolean.sv_test_hygrostat",
+            "outdoor_temperature": "input_number.sv_test_outdoor_temperature",
+            "supply_temperature": "input_number.sv_test_supply_temperature",
+            "extract_temperature": "input_number.sv_test_extract_temperature",
+            "exhaust_temperature": "input_number.sv_test_exhaust_temperature",
+            "supply_fan": "input_number.sv_test_supply_fan",
+            "extract_fan": "input_number.sv_test_extract_fan",
+            "supply_rpm": "input_number.sv_test_supply_rpm",
+            "extract_rpm": "input_number.sv_test_extract_rpm",
+            "bypass": "input_number.sv_test_bypass",
+            "room_temperature": "input_number.sv_test_room_temperature",
+            "humidity": "input_number.sv_test_humidity",
+            "setpoint": "input_number.sv_test_setpoint"
+          }
+        },
+        {
+          "type": "entities",
+          "title": "Test controls",
+          "entities": [
+            "input_select.sv_test_level",
+            "input_boolean.sv_test_gateway",
+            "input_boolean.sv_test_controller",
+            "input_boolean.sv_test_hygrostat",
+            "input_number.sv_test_outdoor_temperature",
+            "input_number.sv_test_supply_temperature",
+            "input_number.sv_test_extract_temperature",
+            "input_number.sv_test_exhaust_temperature",
+            "input_number.sv_test_supply_fan",
+            "input_number.sv_test_extract_fan",
+            "input_number.sv_test_supply_rpm",
+            "input_number.sv_test_extract_rpm",
+            "input_number.sv_test_bypass",
+            "input_number.sv_test_room_temperature",
+            "input_number.sv_test_humidity",
+            "input_number.sv_test_setpoint"
+          ]
+        },
+        {
+          "type": "custom:smart-ventilation-card",
+          "title": "Compact \u00b7 Fahrenheit",
+          "entities": {
+            "level": "input_select.sv_test_level",
+            "gateway": "input_boolean.sv_test_gateway",
+            "controller": "input_boolean.sv_test_controller",
+            "hygrostat": "input_boolean.sv_test_hygrostat",
+            "outdoor_temperature": "input_number.sv_test_outdoor_temperature",
+            "supply_temperature": "input_number.sv_test_supply_temperature",
+            "extract_temperature": "input_number.sv_test_extract_temperature",
+            "exhaust_temperature": "input_number.sv_test_exhaust_temperature",
+            "supply_fan": "input_number.sv_test_supply_fan",
+            "extract_fan": "input_number.sv_test_extract_fan",
+            "supply_rpm": "input_number.sv_test_supply_rpm",
+            "extract_rpm": "input_number.sv_test_extract_rpm",
+            "bypass": "input_number.sv_test_bypass",
+            "room_temperature": "input_number.sv_test_room_temperature",
+            "humidity": "input_number.sv_test_humidity",
+            "setpoint": "input_number.sv_test_setpoint"
+          },
+          "show_title": false,
+          "show_details": false,
+          "temperature_unit": "\u00b0F"
+        },
+        {
+          "type": "custom:smart-ventilation-card",
+          "title": "Unconfigured"
+        },
+        {
+          "type": "custom:smart-ventilation-card",
+          "title": "Unavailable sensor",
+          "entities": {
+            "level": "input_select.sv_test_level",
+            "gateway": "input_boolean.sv_test_gateway",
+            "controller": "input_boolean.sv_test_controller",
+            "hygrostat": "input_boolean.sv_test_hygrostat",
+            "outdoor_temperature": "sensor.sv_test_missing",
+            "supply_temperature": "input_number.sv_test_supply_temperature",
+            "extract_temperature": "input_number.sv_test_extract_temperature",
+            "exhaust_temperature": "input_number.sv_test_exhaust_temperature",
+            "supply_fan": "input_number.sv_test_supply_fan",
+            "extract_fan": "input_number.sv_test_extract_fan",
+            "supply_rpm": "input_number.sv_test_supply_rpm",
+            "extract_rpm": "input_number.sv_test_extract_rpm",
+            "bypass": "input_number.sv_test_bypass",
+            "room_temperature": "input_number.sv_test_room_temperature",
+            "humidity": "input_number.sv_test_humidity",
+            "setpoint": "input_number.sv_test_setpoint"
+          }
+        }
+      ]
+    }
+  ]
+}
