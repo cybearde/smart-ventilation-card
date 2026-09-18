@@ -48,7 +48,7 @@ The distribution file is the complete card; there are no companion assets.
 - Four temperatures, colored on a configurable cyan-to-amber temperature scale.
 - Outdoor → supply and extract → exhaust airflow, with direction animation.
 - Two fixed, straight airflow lines with a central heat-transfer indicator. Normal
-  mode shows recovery; bypass replaces the heat arrow with an open damper and the
+  mode shows recovery; bypass replaces the heat arrow with a muted, crossed-out heat-transfer arrow and the
   actual bypass value. This is a functional diagram, not a physical duct drawing.
 - Supply/extract fans integrated beside the exchanger into straight airflow paths, with output
   percentages; optional RPM values remain available in diagnostics.
@@ -232,8 +232,21 @@ labels:
 `labels` accepts every entity role listed above, plus `recovery`. The center has
 one description, e.g. “Recovery 84%” or “Bypass 100%”; binary bypass states show
 “Bypass active”. Set `show_status_text: false` to hide this description while
-keeping the arrow/damper graphic. Offline and unknown states retain the card's
+keeping the recovery/bypass graphic. Offline and unknown states retain the card's
 connection/unavailable notices.
 
 Enable **Compact layout** in the visual editor or set `compact: true` in YAML.
 Title, diagnostics, custom names and transparency continue to work independently.
+
+### Target temperature in compact mode
+
+With `compact: true`, a configured `entities.setpoint` appears as **Target** in the
+footer, alongside Room, Humidity and Level. It works with diagnostics hidden.
+The visual editor toggle **Show target temperature in compact footer** maps to
+`show_target_temperature` (default `true`). Set it to `false` for the three-value
+footer. On narrow cards, a four-value footer omits icons to keep one readable row.
+The target supports temperature conversion, custom `labels.setpoint`, and more-info.
+
+Fans use a transparent open ring with three outlined blades. Bypass displays a
+static, muted heat-transfer arrow with a diagonal slash; normal recovery keeps
+the animated cyan/amber arrow. Both symbols support compact mode.

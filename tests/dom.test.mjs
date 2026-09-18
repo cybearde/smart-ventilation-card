@@ -41,13 +41,13 @@ test('editor round-trip preserves HA layout options and removes cleared entities
  editor.setConfig(result);assert.equal(editor.shadowRoot.querySelector('ha-form').data.bypass,'sensor.other');
 });
 
-test('heat transfer switches to a damper in bypass and hides for unknown, offline or stopped fans',()=>{
+test('heat transfer switches to the heat-transfer-off symbol in bypass and hides for unknown, offline or stopped fans',()=>{
  const el=card();
  assert.ok(el.shadowRoot.querySelector('.heat-arrow'));
  for (const states of [ {'sensor.bypass':e(100,'%')}, {'sensor.bypass':e('unavailable')}, {'binary_sensor.controller':e('off')}, {'sensor.fan':e(0,'%')}, {'sensor.extract_fan':e(0,'%')}, {'sensor.supply':e(0,'°C')} ]) {
   el.hass={...hass,states:{...hass.states,...states}};
   assert.equal(el.shadowRoot.querySelector('.heat-arrow'),null);
-  assert.equal(!!el.shadowRoot.querySelector('.damper'),states['sensor.bypass']?.state==='100');
+  assert.equal(!!el.shadowRoot.querySelector('.heat-off'),states['sensor.bypass']?.state==='100');
  }
 });
 test('summer recovery reverses heat transfer without reversing the air streams',()=>{
@@ -102,5 +102,16 @@ test('compact layout preserves readings and controls through bypass changes',()=
  assert.equal(small.shadowRoot.querySelectorAll('[data-entity]').length,regular.shadowRoot.querySelectorAll('[data-entity]').length);
  small.hass={...hass,states:{...hass.states,'sensor.bypass':e(100,'%')}};
  assert.equal(small.shadowRoot.querySelector('.mode-description').textContent,'Bypass 100 %');
- assert.ok(small.shadowRoot.querySelector('.damper'));
+ assert.ok(small.shadowRoot.querySelector('.heat-off'));
+});
+
+test('compact target appears without diagnostics and honors units and visibility',()=>{
+ const settings={...config,compact:true,show_diagnostics:false,temperature_unit:'°F',entities:{...config.entities,room_temperature:'sensor.supply',humidity:'sensor.fan',level:'sensor.fan',setpoint:'sensor.extract'}};
+ const el=card(settings);
+ assert.equal(el.shadowRoot.querySelectorAll('.metrics .metric').length,4);
+ const target=el.shadowRoot.querySelector('.metrics [data-entity="sensor.extract"]');
+ assert.match(target.textContent,/Target68 °F/);
+ assert.equal(el.shadowRoot.querySelector('details'),null);
+ el.setConfig({...settings,show_target_temperature:false});
+ assert.equal(el.shadowRoot.querySelectorAll('.metrics .metric').length,3);
 });
