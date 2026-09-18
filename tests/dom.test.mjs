@@ -115,3 +115,25 @@ test('compact target appears without diagnostics and honors units and visibility
  el.setConfig({...settings,show_target_temperature:false});
  assert.equal(el.shadowRoot.querySelectorAll('.metrics .metric').length,3);
 });
+
+test('timestamp-only updates preserve running fan DOM',()=>{
+ const el=card();const rotor=el.shadowRoot.querySelector('.rotor');
+ el.hass={...hass,states:{...hass.states,'sensor.fan':{...hass.states['sensor.fan'],last_updated:'2026-09-18T12:00:00Z'}}};
+ assert.equal(el.shadowRoot.querySelector('.rotor'),rotor);
+});
+test('sensor redraws and speed changes preserve each fan rotation phase',()=>{
+ const animations=new WeakMap();
+ dom.window.SVGElement.prototype.getAnimations=function(){
+  if(!this.classList.contains('rotor')) return [];
+  if(!animations.has(this)) animations.set(this,{animationName:'spin',currentTime:0,effect:{getTiming:()=>({duration:parseFloat(this.style.animationDuration)*1000})}});
+  return [animations.get(this)];
+ };
+ try {
+  const el=card();const fans=()=>[...el.shadowRoot.querySelectorAll('.rotor')];
+  fans()[0].getAnimations()[0].currentTime=875;
+  fans()[1].getAnimations()[0].currentTime=2625;
+  el.hass={...hass,states:{...hass.states,'sensor.fan':e(80,'%'),'sensor.supply':e(17,'°C')}};
+  assert.equal(fans()[0].getAnimations()[0].currentTime,500);
+  assert.equal(fans()[1].getAnimations()[0].currentTime,2625);
+ } finally {delete dom.window.SVGElement.prototype.getAnimations;}
+});

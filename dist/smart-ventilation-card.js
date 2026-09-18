@@ -82,7 +82,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;pa
 .diagram{padding:0 12px}svg{display:block;width:100%;height:auto;overflow:visible}svg text{fill:#f2f5f8;font-family:inherit}.label{font-size:10px;fill:#d7e0e9}.temp{font-size:14px;font-weight:600}.heat-core{fill:#9abacb;fill-opacity:.13;stroke:#9abacb;stroke-opacity:.2;stroke-width:.8}.heat-core.bypassed{fill-opacity:.13}.core-label{font-size:9px;fill:#eef4f8}.core-value{font-size:15px;font-weight:650}.mode-text{font-size:10px;fill:#e4eaf0}.subtle{font-size:8px;fill:#a6b3bf}.heat-arrow{fill:url(#heat-gradient);animation:heat-pulse 2s ease-in-out infinite}.heat-waves{fill:none;stroke:#ffb452;stroke-width:2;stroke-linecap:round}.heat-off-arrow{fill:#91a4b5;opacity:.5}.heat-off-slash{stroke:#e1eaf1;stroke-width:2;stroke-linecap:round;fill:none}.track{fill:none;stroke-width:16;stroke-linecap:butt;opacity:.25}.flow{fill:none;stroke-width:3;stroke-linecap:round;stroke-dasharray:.1 9;animation:flow 1s linear infinite;filter:drop-shadow(0 0 3px currentColor)}.stopped{animation:none!important;opacity:.25}.rotor{transform-box:view-box;transform-origin:18px 18px;animation:spin 2s linear infinite}.fan{display:flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;background:transparent;color:#b4bfcb}.fan>svg{width:36px;height:36px}.fan .housing{fill:none;stroke:#91a4b5;stroke-width:1}.fan .blade{fill:#91a4b5;fill-opacity:.28;stroke:#b4c2cf;stroke-width:.7;stroke-linejoin:round}.fan .hub{fill:#586c7e;stroke:#bdcad6;stroke-width:.7}.fan-label{font-size:9px;fill:#cbd6e1}.fan-output{font-size:12px;font-weight:600}button{font:inherit;color:inherit;cursor:pointer;text-align:left;border:0}button:focus-visible,summary:focus-visible{outline:2px solid #67def0;outline-offset:-2px}button:disabled{cursor:default}
 .compact .metrics{padding:10px 0}@container(max-width:460px){.four-values .metric ha-icon{display:none}.four-values .metric{justify-content:center;padding:0 5px}.four-values .metric strong{font-size:12px}.four-values .metric span{font-size:9px}}.compact header{padding-top:12px}.metrics{border-top:1px solid #39434c;display:flex;margin:0 14px;padding:16px 0;gap:0}.metric{background:none;padding:8px;min-width:0}.metrics .metric{flex:1;display:flex;align-items:center;gap:10px;padding:0 10px}.metrics .metric:first-child{padding-left:0}.metrics .metric+.metric{border-left:1px solid #63707c}.metric span{display:block;font-size:10px;color:#b6c3d0;overflow-wrap:anywhere}.metric strong{display:block;font-size:14px;font-weight:600;margin-top:3px;overflow-wrap:anywhere}.metric ha-icon{--mdc-icon-size:25px;color:#bdc9d5;flex-shrink:0}.metrics .metric:last-child{padding-right:0}details{border-top:1px solid #39434c;padding:10px 16px;font-size:11px}summary{cursor:pointer;color:#aab8c5}.extras{display:grid;grid-template-columns:1fr 1fr;margin-top:8px}.notice{margin:0;padding:8px 16px;color:#f2f5f8;border-left:3px solid #ffb452;font-size:11px}.empty{padding:28px 18px;color:#b6c3d0;font-size:14px}.disabled .flow,.disabled .rotor,.disabled .heat-arrow{animation:none!important}@keyframes flow{to{stroke-dashoffset:-36.4}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes heat-pulse{50%{opacity:.65}}@media(prefers-reduced-motion:reduce){.flow,.rotor,.heat-arrow{animation:none!important}}@container(max-width:350px){header{padding:14px 14px 2px}h2{font-size:16px}.metrics .metric{gap:5px;padding:0 7px}.metric ha-icon{--mdc-icon-size:22px}.metric strong{font-size:13px}}
 `;
-const fanIcon = speed => `<svg viewBox="0 0 36 36" aria-hidden="true"><circle class="housing" cx="18" cy="18" r="16"/><g class="rotor ${speed ? '' : 'stopped'}" style="animation-duration:${speed ? 6-5*speed/100 : 6}s" fill="currentColor">${[0,120,240].map(angle=>`<path class="blade" transform="rotate(${angle} 18 18)" d="M16.6 16.5C11.2 13.7 10.8 7.1 16 5.5C18.5 4.8 21 5.4 21.5 6.7C17.8 8.2 17.4 11.7 19.1 15.8Z"/>`).join('')}<circle class="hub" cx="18" cy="18" r="2.5"/></g></svg>`;
+const fanIcon = speed => `<svg viewBox="0 0 36 36" aria-hidden="true"><circle class="housing" cx="18" cy="18" r="16"/><g class="rotor ${speed ? '' : 'stopped'}" style="animation-duration:${speed ? 6-5*speed/100 : 6}s" fill="currentColor">${[0,120,240].map(angle=>`<path class="blade" transform="rotate(${angle} 18 18)" d="M16.4 16.2C13.3 14.7 11.8 11.2 13.2 8.5C14.4 6.4 18.9 6.1 21.2 8C22.7 9.3 22.3 11.5 20.8 13.1L19.3 16.2Z"/>`).join('')}<circle class="hub" cx="18" cy="18" r="2.5"/></g></svg>`;
 export class SmartVentilationCard extends HTMLElement {
   constructor() { super(); this.attachShadow({mode:'open'}); this._signature = ''; }
   static getConfigElement() { return document.createElement('smart-ventilation-card-editor'); }
@@ -107,9 +107,18 @@ export class SmartVentilationCard extends HTMLElement {
   render() {
     if (!this._config || !this._hass) return;
     const c = this._config;
-    const signature = JSON.stringify([c, this._hass.locale,this._hass.config?.unit_system, Object.values(c.entities).concat(c.extra_entities).map(id=>this._hass.states[id])]);
+    const signature = JSON.stringify([c, this._hass.locale,this._hass.config?.unit_system, Object.values(c.entities).concat(c.extra_entities).map(id=>{const entity=this._hass.states[id];return entity ? [entity.state,entity.attributes] : null;})]);
     if (signature === this._signature) return;
     this._signature = signature;
+    // Rebuilding the SVG must not reset a running fan to its initial angle.
+    const rotorPhases = new Map();
+    for (const fan of this.shadowRoot.querySelectorAll('[data-fan]')) {
+      const animation = fan.querySelector('.rotor')?.getAnimations?.().find(a=>a.animationName==='spin');
+      const duration = animation?.effect?.getTiming().duration;
+      if (typeof animation?.currentTime === 'number' && typeof duration === 'number' && duration > 0) {
+        rotorPhases.set(fan.dataset.fan,(animation.currentTime % duration)/duration);
+      }
+    }
     const detailsOpen = this.shadowRoot.querySelector('details')?.open;
     const focusedEntity = this.shadowRoot.activeElement?.dataset?.entity;
     const layout = c.compact ? {height:174,top:48,bottom:148,coreY:4,coreHeight:163,headingY:8,statusY:110} : {height:238,top:76,bottom:184,coreY:28,coreHeight:198,headingY:34,statusY:153};
@@ -168,6 +177,13 @@ export class SmartVentilationCard extends HTMLElement {
       ${missing || offline ? `<p class="notice" role="status">${offline?'Connection lost or unknown. Readings may be stale. ':''}${missing?`${missing} configured ${missing===1?'entity':'entities'} unavailable or unknown.`:''}</p>`:''}
       ${c.show_diagnostics && (c.extra_entities.length || diagnostics.length) ? `<details ${detailsOpen?'open':''}><summary>Diagnostics & additional values</summary><div class="extras">${diagnostics.map(k=>metric(k)).join('')}${c.extra_entities.map(id=>metric('',this._hass.states[id]?.attributes?.friendly_name??id,this._hass.states[id],id)).join('')}</div></details>`:''}` : '<p class="empty">Choose your ventilation entities in the visual editor or YAML settings to get started.</p>'}
       </ha-card>`;
+    for (const fan of this.shadowRoot.querySelectorAll('[data-fan]')) {
+      const phase = rotorPhases.get(fan.dataset.fan);
+      if (phase === undefined) continue;
+      const animation = fan.querySelector('.rotor')?.getAnimations?.().find(a=>a.animationName==='spin');
+      const duration = animation?.effect?.getTiming().duration;
+      if (animation && typeof duration === 'number' && duration > 0) animation.currentTime = phase * duration;
+    }
     if (focusedEntity) [...this.shadowRoot.querySelectorAll('[data-entity]')].find(el=>el.dataset.entity===focusedEntity)?.focus();
     this.shadowRoot.querySelectorAll('[data-entity]').forEach(button => button.addEventListener('click',()=>this.dispatchEvent(new CustomEvent('hass-more-info',{detail:{entityId:button.dataset.entity},bubbles:true,composed:true}))));
   }
